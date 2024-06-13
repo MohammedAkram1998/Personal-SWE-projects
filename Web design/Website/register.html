@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Contact</title>
+		<link rel="stylesheet" type = "text/css" href="Assets/CSS/style.css">
+		<script src="Assets/Scripts/site.js"></script>
+	</head>
+		
+	<body>
+	
+		<div id = "main">
+			<header>
+				<h2 id="headerText">Magnus Carlsen Chess Club</h2>
+					
+				<nav>
+					<ul>
+						<li><a class="active" href="index.html">Home</a></li>
+						<li><a href="Facilities.html">Facilities</a></li>
+						<li><a href="info.html">Information</a></li>
+						<li><a href="news.html">News</a></li>
+						<li><a href="register.html">Register</a></li>
+					</ul>
+				</nav>
+			</header>
+			
+			<div id="content">
+				<section id = "form">
+					<h3>Registration Page</h3>
+				
+					<form action = "quiz.html" name = "regForm" onsubmit = "return( validate() );">
+						<div>
+							<label>
+								<span>Firstname:</span><span class = "errorMessage" id = "firstnameMessage"></span>
+								<input type = "text" class = "generalInput" name = "firstname">
+							</label>
+						</div>
+						
+						<div>
+							<label>
+								<span>Lastname: </span><span class = "errorMessage" id = "lastnameMessage"></span>
+								<input type "text" class = "generalInput" name = "lastname">
+							</label>
+						</div>
+						
+						<div>
+							<label>
+								<span>Email </span><span class = "errorMessage" id = "emailMessage"></span>
+								<input type = "text" class = "generalInput" name = "Email">
+							</label>
+						</div>
+						
+						<div>
+							<label>Password: </label>
+							<input type = "password" class = "generalInput" name = "password1">
+						</div>
+						
+						<div>
+							<label>	Confirm Password: </label>
+							<input type = "password" class = "generalInput" name = "password2">
+						</div>
+					
+						<div>
+							<label>League:</label>
+							<select class = "generalInput">
+								<option value = "Beginner ELO (800-1199)">Beginner</option>
+								<option value = "Intermediate ELO (1200-1599)">Intermediate</option>
+								<option value = "Expert ELO (1600-1999)">Expert</option>
+								<option value = "Grandmaster ELO (2000+)">Grandmaster</option>
+							</select>
+						</div>
+					
+						<div>
+							<label>Gender:</label><br>
+							<input class = "Gender" type = "radio" name = "gender" value = "male"checked>Male<br>
+							<input class = "Gender" type = "radio" name = "gender" value = "female">Female<br>
+							<input class = "Gender" type = "radio" name = "gender" value = "other">Other <br><br>
+						</div>
+						
+						<div>
+							<label>Instructor:</label> <br>
+							<input class = "clickInput" type = "checkbox" name = "Grandmaster" value = "Magnus Carlsen">Magnus Carlsen <br>
+							<input class = "clickInput" type = "checkbox" name = "Grandmaster" value = "Fabiano Caruana">Fabiano Caruana <br>
+							<input class = "clickInput" type = "checkbox" name = "Grandmaster" value = "Judit Polgár">Judit Polgár <br>
+							<input class = "clickInput" type = "checkbox" name = "Grandmaster" value = "Viswanathan Anand">Viswanathan Anand <br> <br>
+						</div>
+						
+						<button id = "FormButton" type = "submit">Submit</button><br>
+						
+					</form>
+				</section>
+			</div>
+				
+			<footer>
+				Site by Mohammed Akram Choudhary &copy 2022
+			</footer>
+		</div>
+	</body>
+</html>

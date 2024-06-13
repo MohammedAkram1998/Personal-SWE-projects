@@ -1,0 +1,181 @@
+---
+title: "STAT40730_A1_22203536"
+format:
+  html:
+    embed-resources: true
+---
+
+## Task 1 
+
+```{r}
+
+library(readxl)
+
+# Load the dataset
+eurostat_crime <- read_excel("EurostatCrime2021.xlsx", skip = 6, na = ":")
+
+# View the first few rows
+head(eurostat_crime)
+
+
+
+```
+
+```{r}
+
+# Check the size of the dataset
+dim(eurostat_crime)
+
+# Check the structure
+str(eurostat_crime)
+
+
+```
+
+```{r}
+
+
+eurostat_crime <- eurostat_crime[ , !(names(eurostat_crime) %in% c("Fraud", "Money laundering"))]
+
+
+```
+
+```{r}
+
+
+columns_to_remove <- c("Theft", "Theft of a motorized vehicle or parts thereof", 
+                       "Burglary", "Burglary of private residential premises")
+eurostat_crime <- eurostat_crime[ , !(names(eurostat_crime) %in% columns_to_remove)]
+
+```
+
+```{r}
+
+
+eurostat_crime$Total_Offences <- rowSums(eurostat_crime[ , -1], na.rm = TRUE)
+
+
+```
+
+```{r}
+
+countries_with_missing_data <- eurostat_crime$Country[apply(is.na(eurostat_crime), 1, any)]
+countries_with_missing_data
+
+```
+
+```{r}
+
+
+eurostat_crime <- eurostat_crime[complete.cases(eurostat_crime), ]
+
+
+
+```
+
+```{r}
+
+dim(eurostat_crime)
+
+
+
+
+
+```
+
+### Analysis for Task 1
+
+The data-set was successfully loaded and the size of the data-set was determined to be 41 rows and 18 columns. The structure is displayed above and was determined using the "str" function. The Fraud and Money laundering columns were removed. The columns "Theft", "Burglary", "Theft of a motorized vehicle or parts thereof" and "Burglary of private residential premises" were removed to allow for meaningful comparisons. A new Total_Offences column was created. Countries with missing data were then removed which accounted for 29 of the 41 countries. The final data frame remaining after the aforementioned changes was 12 rows and 13 columns.
+
+## Task 2 
+
+```{r}
+
+highest_offences_country <- eurostat_crime$Country[which.max(eurostat_crime$Total_Offences)]
+highest_offences_country
+
+```
+
+```{r}
+
+eurostat_crime$Proportion_Computer_Crimes <- eurostat_crime$`Acts against computer systems` / eurostat_crime$Total_Offences
+computer_crime_table <- eurostat_crime[, c("Country", "Proportion_Computer_Crimes")]
+
+
+computer_crime_table_sorted <- computer_crime_table[order(computer_crime_table$Proportion_Computer_Crimes), ]
+computer_crime_table_sorted$Proportion_Computer_Crimes <- round(computer_crime_table_sorted$Proportion_Computer_Crimes, 3)
+
+
+head(computer_crime_table_sorted, 20)
+
+
+
+
+
+```
+
+## 
+
+```{r}
+
+
+library(ggplot2)
+library(ggrepel)
+
+ggplot(eurostat_crime, aes(x = Robbery, y = `Unlawful acts involving controlled drugs or precursors`, label = Country)) +
+  geom_point() +
+  geom_text_repel() +
+  labs(title = "Relationship between Robbery and Unlawful Acts Involving Drugs",
+       x = "Robbery",
+       y = "Unlawful Acts Involving Drugs") +
+  theme_minimal()
+
+
+```
+
+### Analysis for Task 2
+
+The country with the highest offences was demonstrated to be Finland. The table demonstrates that countries such as Lithuania and Austria had high levels of Cyber-crimes as a proportion of crimes and that countries such as Ireland and Latvia had low proportionate rates of Cyber-crime. The graph shows there is a wide variation among European countries in terms or robbery incidents and unlawful acts involving drugs. There is not a consistent pattern demonstrating that countries with high rates of robbery will have high rates of drug related offences or vice versa. There may be various socio economic or political factors influencing these numbers. For example Ireland, Finland and Austria have high GDP per capita compared to many of the other countries and have much higher rates of Unlawful acts involving drugs.
+
+## Task 3 
+
+```{r}
+
+
+library(ggplot2)
+library(ggrepel)
+
+ggplot(eurostat_crime, aes(x = `Rape`, y = `Sexual assault`, label = Country)) +
+  geom_point() +
+  geom_text_repel() +
+  labs(title = "Comparison of Rape and Sexual Assault Rates",
+       x = "Rape Rate per 100,000",
+       y = "Sexual Assault Rate per 100,000") +
+  theme_minimal()
+
+```
+
+```{r}
+
+library(ggplot2)
+library(ggrepel)
+
+ggplot(eurostat_crime, aes(x = `Serious assault`, y = Rape, label = Country)) +
+  geom_point() +
+  geom_text_repel() +
+  labs(title = "Comparison of Theft and Rape Rates",
+       x = "Serious Assault Rate per 100,000",
+       y = "Rape Rate per 100,000") +
+  theme_minimal()
+
+
+
+```
+
+### Analysis of task 3 
+
+For the first graph showing the relationship between sexual assault and rape most countries are in the bottom left quadrant indicating low rates of both sexual assault and rape. There is a positive correlation between rates of rape and sexual assault. This could be explained by the similar nature of these crimes as they are both classified as sex crimes. Some countries such as Finland, Ireland and Austria have much higher rates or sexual assault and rape than others.
+
+For the second plot showing the relationship between serious assault and rape there is a weak positive correlation between serious assault and rape. This might be due to the fact these crimes can be inflicted by perpetrators on the same victims during the same incidents or perhaps as they are both crimes of a violent nature and indicate a higher level of violence in some societies.
+
+## END OF ASSIGNMENT

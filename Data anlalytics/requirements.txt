@@ -1,0 +1,17 @@
+packages 
+
+pandas 
+matplotlib 
+numpy 
+scipy.stats
+sklearn.preprocessing
+seaborn 
+
+commands 
+
+conda install pandas
+conda install matplotlib
+conda install numpy
+conda install scipy
+conda install scikit-learn
+conda install seaborn

@@ -1,0 +1,350 @@
+---
+title: "A2_22203536"
+format: html
+editor: visual
+---
+
+# NB OUTPUTS ARE ALSO ENCLOSED IN HTML/PDF FILE
+
+In this assignment I will learn to navigate and preprocess real-world data, to perform descriptive statistics and exploratory data analyses, to develop my ability to report scientifically and to enhance my problem solving and creativity.
+
+# Task 1: Manipulation
+
+## 1.
+
+```{r}
+
+
+library(tibble)
+library(readr)
+library(dplyr)
+library(lubridate)
+library(forcats)
+
+# loading 
+dublin_bikes <- read_delim("dublin-bikes-v2 (1).txt", delim = "\t", show_col_types = FALSE)
+
+# missing values 
+dublin_bikes <- dublin_bikes %>%
+  mutate(across(where(is.numeric), ~ifelse(is.na(.), median(., na.rm = TRUE), .)))
+
+# renaming 
+dublin_bikes <- dublin_bikes %>%
+  rename(
+    Rain_mm = rain,             
+    Temp_C = temp,             
+    WindSpeed_kt = wdsp,        
+    CloudAmount_okta = clamt)    
+
+# change to tibble 
+dublin_bikes_tibble <- as_tibble(dublin_bikes)
+
+# check if tibble 
+print(is_tibble(dublin_bikes_tibble))
+
+# print names to confirm 
+print(names(dublin_bikes_tibble))
+
+
+```
+
+I have loaded the data and renamed the weather related features to meaningful names. I also handled missing data here with imputation of the median just to prevent any issues from arising later on. Only a tiny fraction of the rows were missing so this does not affect the data that much. I used read_delim to load the data and converted the data to a tibble.
+
+## 2.
+
+```{r}
+
+# I will show the size 
+dim(dublin_bikes_tibble)
+
+# Next I will check the classes of variables.
+sapply(dublin_bikes_tibble, class)
+
+# I will ensure the variables are numeric and time is in datetime format 
+
+dublin_bikes_tibble$Time <- as.POSIXct(dublin_bikes_tibble$Time, format = "%Y-%m-%d %H:%M:%S")
+num_vars <- setdiff(names(dublin_bikes_tibble), "Time")
+dublin_bikes_tibble[num_vars] <- lapply(dublin_bikes_tibble[num_vars], as.numeric)
+
+
+```
+
+I checked the size of the data which was determined to be 8760 rows by 12 columns. I checked the classes of variables by using sapply(dublin_bikes_tibble, class) checking the class of each variable to see if time is in datetime format. I used as.POSIXct() to ensure the time is converted to POSIXct date-time class. The format is year, month , day, hour ,minute, second. I used 'lapply()' to convert the remaining to numeric and setdiff() to exclude Time variable from this.
+
+## 3.
+
+```{r}
+
+
+dublin_bikes_tibble$CloudAmount_okta <- factor(dublin_bikes_tibble$CloudAmount_okta, ordered = TRUE)
+
+
+levels(dublin_bikes_tibble$CloudAmount_okta)
+is.ordered(dublin_bikes_tibble$CloudAmount_okta)
+
+
+```
+
+I took the CloudAmount_okta column from my dublin_bikes_tibble data and converted it to an ordered factor. I used factor() with the ordered = TRUE argument to perform this conversion. Next to check it was successful I printed out the levels of this newly created ordered factor using the levels() function. I used the is.ordered() function to further confirm this and it returned true.
+
+## 4.
+
+```{r}
+
+library(tidyverse)
+
+
+# create columns for date and hour 
+dublin_bikes_tibble <- dublin_bikes_tibble %>%
+  mutate(Date = as.Date(Time),
+         Hour = format(Time, "%H"))
+
+# check if 24 hours for each date 
+hours_per_date <- dublin_bikes_tibble %>%
+  count(Date, Hour) %>%
+  ungroup() %>%
+  count(Date)
+
+
+dates_not_24_hours <- hours_per_date %>%
+  filter(n != 24) %>%
+  pull(Date)
+
+# check there are 365 dates 
+num_unique_dates <- dublin_bikes_tibble %>%
+  summarise(num_dates = n_distinct(Date)) %>%
+  pull(num_dates)
+
+# Display results
+print(paste("Number of unique dates:", num_unique_dates))
+if (length(dates_not_24_hours) > 0) {
+  print("Dates with not 24 hours :")
+  print(dates_not_24_hours)
+} else {
+  print("All dates have 24 hours.")
+}
+
+```
+
+I used the dplyr package so split the Time column into date and hour using the mutate function. I used as.Date for extracting the date and the format function to format the time. In order to confirm each date had 24 hours and also that there were 365 dates. I used the dplyr count function to count and filter to see any discrepancies. The n_distinct function was used to count unique dates.
+
+## 5.
+
+```{r}
+# create columns for month and day of the week 
+dublin_bikes_tibble$DayOfWeek <- factor(weekdays(dublin_bikes_tibble$Date), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), ordered = TRUE)
+dublin_bikes_tibble$Month <- factor(format(dublin_bikes_tibble$Date, "%B"), levels = month.name, ordered = TRUE)
+
+
+is.ordered(dublin_bikes_tibble$DayOfWeek)
+is.ordered(dublin_bikes_tibble$Month)
+
+
+
+```
+
+I created a new column called DayofWeek by extracting the existing Date column. I used the weekdays function to translate the dates into their respective weekday names. I also extracted the month from the date in order to create a Month column. I used the is.ordered function to ensure they were ordered factors.
+
+## 6.
+
+```{r}
+
+library(dplyr)
+
+dublin_bikes_tibble <- dublin_bikes_tibble %>%
+  select(-Time) %>%
+  relocate(Date, Hour, DayOfWeek, Month)
+
+
+
+```
+
+```{r}
+# check first 4 to make sure it was done properly 
+
+head(dublin_bikes_tibble[, 1:4])
+
+```
+
+```{r}
+# check if Time is still there 
+"Time" %in% colnames(dublin_bikes_tibble)
+
+```
+
+I used dplyer select to remove time and then used relocate to rearrange the columns as requested. I then used base r to check the first 4 columns and also to check if the Time column had been removed.
+
+# Task 2: Analysis
+
+## 1.
+
+```{r}
+
+
+monthly_precipitation <- aggregate(Rain_mm ~ Month, data = dublin_bikes_tibble, sum)
+
+
+highest_precip <- monthly_precipitation[which.max(monthly_precipitation$Rain_mm), ]
+lowest_precip <- monthly_precipitation[which.min(monthly_precipitation$Rain_mm), ]
+
+
+print(paste("The month with the highest precipitation:", highest_precip$Month, "with", highest_precip$Rain_mm, "mm of rain."))
+print(paste("The month with the lowest precipitation:", lowest_precip$Month, "with", lowest_precip$Rain_mm, "mm of rain."))
+
+
+
+```
+
+Base R was used to calculate the months with the highest and lowest precipitations and the results were printed.
+
+## 2.
+
+```{r}
+
+
+library(ggplot2)
+library(dplyr)
+
+
+
+
+daily_temps <- dublin_bikes_tibble %>%
+  group_by(Date) %>%
+  summarize(Max_Temp = max(Temp_C, na.rm = TRUE), 
+            Min_Temp = min(Temp_C, na.rm = TRUE)) %>%
+  ungroup()  # ensure the data is ungrouped for plotting
+
+
+ggplot(daily_temps, aes(x = Date)) +
+  geom_line(aes(y = Max_Temp, color = "Max Temp")) +
+  geom_line(aes(y = Min_Temp, color = "Min Temp")) +
+  labs(title = "Daily Max and Min Temperatures", x = "Date", y = "Temperature (°C)") +
+  scale_color_manual(values = c("Max Temp" = "red", "Min Temp" = "blue")) +
+  theme_minimal()  
+
+
+print(ggplot(daily_temps, aes(x = Date)) +
+        geom_line(aes(y = Max_Temp, color = "Max Temp")) +
+        geom_line(aes(y = Min_Temp, color = "Min Temp")) +
+        labs(title = "Daily Max and Min Temperatures", x = "Date", y = "Temperature (°C)") +
+        scale_color_manual(values = c("Max Temp" = "red", "Min Temp" = "blue")) +
+        theme_minimal())
+
+
+
+```
+
+### 3.
+
+```{r}
+
+
+dublin_bikes_tibble$WeekdayType <- ifelse(dublin_bikes_tibble$DayOfWeek %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+
+
+average_rain <- aggregate(Rain_mm ~ WeekdayType, data = dublin_bikes_tibble, mean)
+
+
+if (average_rain$Rain_mm[average_rain$WeekdayType == "Weekend"] > 
+    average_rain$Rain_mm[average_rain$WeekdayType == "Weekday"]) {
+  print("Weekends have more rain than weekdays on average.")
+} else {
+  print("Weekdays have more rain than weekends on average.")
+}
+
+
+
+
+```
+
+#### 
+
+## 4.
+
+```{r}
+
+# Define Mode
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+
+library(ggplot2)
+library(dplyr)
+
+
+april_data <- filter(dublin_bikes_tibble, Month == "April")
+
+
+april_location_data <- april_data %>%
+  group_by(Date) %>%
+  summarize(
+    Total_Traffic = sum(`Clontarf - James Larkin Rd`, na.rm = TRUE),
+    Mode_Cloud = Mode(as.numeric(CloudAmount_okta))
+  ) %>%
+  ungroup()  
+
+
+ggplot(april_location_data, aes(x = Date)) +
+  geom_line(aes(y = Total_Traffic), color = "green") +
+  geom_point(aes(y = Mode_Cloud), color = "blue") +
+  labs(title = "Daily Traffic Volume and Mode Cloud Amount for April at James Larkin Rd", x = "Date", y = "Count/Mode") +
+  theme_minimal() 
+
+```
+
+On inspection, the green line which denotes the daily traffic volume at a specific location in Clontarf, James Larkin road and shows significant fluctuation over the course of the month of April. The variation could be attributed to a variety of factors such as weekly work cycles as we see decreases on weekends (for April 2022 by inspection of the calender for that month ) and an increase during weekdays, certain weather patterns and road conditions may also contribute to the fluctuation in usage. Weekends generally being more wet as we have seen earlier.
+
+# Task 3
+
+# Plot 1
+
+```{r}
+
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+
+
+
+ggplot(dublin_bikes_tibble, aes(x = Temp_C, y = `Clontarf - James Larkin Rd`, color = CloudAmount_okta)) +
+  geom_point(alpha = 0.6) +
+  scale_color_viridis_d() +
+  labs(title = "Cycling Activity vs. Temperature",
+       subtitle = "Color-coded by Cloud Amount",
+       x = "Temperature (°C)",
+       y = "Cycling Activity at Clontarf - James Larkin Rd",
+       color = "Cloud Amount (okta)") +
+  theme_minimal()
+```
+
+This plot shows the triad relationship between temperature conditions and cycling activity at James Larkin Road with color coded cloud cover as a third dimension. The plot demonstrates that cycling activity increases at higher temperatures. There seems to also be high levels of activity even at various cloud cover levels and the highest levels dont seem to correspond to clear skies.
+
+## Plot 2
+
+```{r}
+
+dublin_bikes_tibble$Rain_Category <- cut(dublin_bikes_tibble$Rain_mm, breaks = c(-Inf, 0, 5, Inf),
+                                  labels = c("No Rain", "Light Rain", "Heavy Rain"))
+
+
+ggplot(dublin_bikes_tibble, aes(x = Rain_Category, y = `Grove Road Totem`, fill = Rain_Category)) +
+  geom_boxplot() +
+  labs(title = "Bicycle Traffic Volume vs. Rainfall",
+       x = "Rainfall Category",
+       y = "Bicycle Traffic Volume at Grove Road Totem") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Blues")
+
+
+
+```
+
+There is a clear relationship between volume of bicycle activity and levels of rainfall. After categorizing rainfall as none, light or heavy it is seen that bicycle activity is highest when there is no rain and lowest when rain is heavy. It is moderate during light rain. This is in line with what I expected.
+
+# END OF ASSIGNMENT

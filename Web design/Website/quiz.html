@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Quiz</title>
+		<link rel="stylesheet" type = "text/css" href="Assets/CSS/style.css">
+		<script src="Assets/Scripts/site.js"></script>
+	</head>
+		
+	<body>
+		
+			
+		<div id = "main">
+			<header>
+				<h2 id="headerText">Magnus Carlsen Chess Club</h2>
+					
+				<nav>
+					<ul>
+						<li><a class="active" href="index.html">Home</a></li>
+						<li><a href="Facilities.html">Facilities</a></li>
+						<li><a href="info.html">Information</a></li>
+						<li><a href="news.html">News</a></li>
+						<li><a href="register.html">Register</a></li>
+					</ul>
+				</nav>
+			</header>
+			
+			<div id = "content">
+				<section class = "contentSection">
+					<h2> Submission Success!! <h2>
+					<br>
+					<h3>Chess Quiz</h3>
+					<hr>
+					<h5> If you want to get a headstart on your first lesson try out this Quiz</h5>
+					<br><br><br><br><br><br>
+					
+				</section>
+				
+				<section id = "quiz">
+					<div class = "wrapper">
+						
+						<button class = "quizButton" onclick = "setQuestion(0);">Q1</button> 
+						<button onclick = "setQuestion(1);">Q2</button>
+						<button onclick = "setQuestion(2);">Q3</button>
+						<button onclick = "setQuestion(3);">Q4</button>
+						<button onclick = "setQuestion(4);">Q5</button>
+						<button onclick = "setQuestion(5);">Q6</button>
+						<button onclick = "setQuestion(6);">Q7</button>
+						<button onclick = "setQuestion(7);">Q8</button>
+						<button onclick = "setQuestion(8);">Q9</button>
+						<button onclick = "setQuestion(9);">Q10</button>
+						
+					</div>
+					
+					<h2>Question:</h2>
+					<h3 id = "question"></h3> <br>
+					
+					<label>
+						<span>Enter your answer:</span>
+						<input class = "generalInput" type = "text" id = "answer" required>
+					</label>
+					
+					<h3 id = "correct"></h3>
+					<section id = "submission">
+					
+						<button onclick = "checkAnswer();">Submit</button>
+					</section>
+			
+			
+			
+			</div>
+		
+		  </header>
+				
+			<footer>
+				Site by Mohammed Akram Choudhary &copy 2022
+			</footer>
+		</div>
+	</body>
+</html>

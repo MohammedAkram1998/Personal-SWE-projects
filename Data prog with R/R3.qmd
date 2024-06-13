@@ -1,0 +1,482 @@
+---
+title: "FINAL_22203536"
+format: html
+editor: visual
+---
+
+# Part 1: Analysis
+
+## Introduction
+
+For this part of the project I will analyse a health data-set on diabetes. This data-set is available at <https://networkrepository.com/pima-indians-diabetes.php> and a citation has been included below.
+
+R. A. Rossi and N. K. Ahmed, "The Network Data Repository with Interactive Graph Analytics and Visualization," in Proc. AAAI, 2015. \[Online\]. Available: <https://networkrepository.com/pima-indians-diabetes.php>
+
+## Loading the data
+
+```{r}
+
+
+library(readr)
+library(tidyverse)
+
+
+
+
+diabetes_data <- read_csv("C:\\Users\\krmch\\OneDrive\\Desktop\\specs\\diabetes (1).csv")
+
+
+
+
+```
+
+## Data Exploration
+
+```{r}
+
+
+# I will begin by counting the number of missing values for a feature 
+missing_values <- sapply(diabetes_data, function(x) sum(is.na(x)))
+print(missing_values)
+
+```
+
+```{r}
+
+
+# Next I will check for duplicate rows.
+duplicate_rows <- sum(duplicated(diabetes_data))
+
+
+print(duplicate_rows)
+```
+
+```{r}
+
+# Next I will display the datatypes for the features.
+data_types <- sapply(diabetes_data, class)
+
+
+print(data_types)
+
+
+```
+
+```{r}
+
+
+# I will then check the first few rows of the data.
+
+head(diabetes_data)
+```
+
+```{r}
+
+# Next I will check the last few rows of the data 
+
+tail(diabetes_data)
+```
+
+```{r}
+
+
+# I Will check the data for negative values as negative values are not sensible for the features in this dataset 
+negative_values <- sapply(diabetes_data, function(x) sum(x < 0))
+
+
+print(negative_values)
+```
+
+```{r}
+
+# I will print summary statsitics for the features 
+summary(diabetes_data)
+
+
+
+
+# I will write a function to calculate skewness.
+skewness <- function(x) {
+  
+  
+  n <- length(x)
+  mean_x <- mean(x, na.rm = TRUE)
+  s3 <- mean((x - mean_x)^3, na.rm = TRUE)
+  s2 <- sqrt(mean((x - mean_x)^2, na.rm = TRUE))
+  (n/(n-1)/(n-2)) * s3 / s2^3
+  
+  
+  
+}
+
+# I will write a function to calculate kurtosis 
+kurtosis <- function(x) {
+  
+  
+  
+  n <- length(x)
+  mean_x <- mean(x, na.rm = TRUE)
+  s4 <- mean((x - mean_x)^4, na.rm = TRUE)
+  s2 <- mean((x - mean_x)^2, na.rm = TRUE)
+  ((n*(n+1))/((n-1)*(n-2)*(n-3))) *  (s4 / s2^2) - (3*((n-1)^2)/((n-2)*(n-3)))
+  
+  
+}
+
+# I will apply the functions to get skewness and kurtosis for numeric features 
+numeric_vars <- sapply(diabetes_data, is.numeric)
+numeric_columns <- names(diabetes_data)[numeric_vars]
+
+# I will create a list to store results 
+descriptive_stats <- list()
+
+# Calculate those stats using a loop (i.e skewness and kurtosis)
+for (column in numeric_columns) {
+  column_data <- na.omit(diabetes_data[[column]])
+  descriptive_stats[[column]] <- list(
+    skewness = skewness(column_data),
+    kurtosis = kurtosis(column_data)
+  )
+}
+
+# finally I will print the reuslts.
+descriptive_stats
+
+
+```
+
+I notice there are 0s for many of the numeric features based on the summary statistics. 0s are not meaningful for these medical statistics and as such they likely represent missing data. As such I will impute missing values.
+
+```{r}
+
+
+
+columns_to_impute <- c("Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI")
+
+# Impute for the missing data, I will use mean since they are continuous features.
+diabetes_data <- diabetes_data %>%
+  mutate(across(all_of(columns_to_impute), 
+                ~ ifelse(. == 0, mean(.[. != 0], na.rm = TRUE), .)))
+
+
+# I will investigate correlations to the target feature as part of my analysis 
+
+
+x <- cor(diabetes_data)
+
+
+x2 <- x[,'Outcome']
+
+# View the correlations
+print(x2)
+
+```
+
+```{r}
+
+
+# Outcome is a categorical variable (a binary categorical variable)
+diabetes_data$Outcome <- as.factor(diabetes_data$Outcome)
+
+
+
+```
+
+```{r}
+
+# After making the  changes I will look at the summary stats again.
+
+summary(diabetes_data)
+```
+
+```{r}
+
+# I will now investigate the correlations between the other features in this data.
+
+numeric_cols <- sapply(diabetes_data, is.numeric)
+correlation_matrix <- cor(diabetes_data[, numeric_cols], use = "complete.obs")
+print(correlation_matrix)
+
+
+```
+
+Given these correlations we should further investigate with some Plots.
+
+## Plotting the data
+
+```{r}
+
+
+library(ggplot2)
+
+# Boxplots by the outcome (i.e the target feature )
+create_boxplots_by_outcome <- function(data, outcome_var) {
+  numeric_vars <- sapply(data, is.numeric)
+  numeric_var_names <- names(numeric_vars[numeric_vars])
+  
+# Use a loop to create the boaxplots for all
+  for (var_name in numeric_var_names) {
+    print(ggplot(data, aes_string(x = outcome_var, y = var_name, fill = outcome_var)) +
+            
+            
+            geom_boxplot() +
+            labs(title = paste("Boxplot of", var_name, "by", outcome_var)))
+  }
+}
+
+# Finally I will call the function 
+create_boxplots_by_outcome(diabetes_data, "Outcome")
+
+
+```
+
+```{r}
+
+library(ggplot2)
+library(GGally)
+```
+
+GGally is an extension of ggplot and was used here to create pair plots.
+
+```{r}
+
+
+# selecting variables for the pair plot.
+selected_vars <- diabetes_data[, c("Glucose", "Insulin", "SkinThickness", "BMI", "Age")]
+
+
+# making the pair plot 
+ggpairs(selected_vars)
+
+
+
+```
+
+```{r}
+
+
+library(ggplot2)
+
+# Making a scatter plot of pregnancies against age.
+
+ggplot(diabetes_data, aes(x = Pregnancies, y = Age)) +
+  geom_point(aes(color = Outcome)) +
+  labs(title = "No of Pregancies vs Age")
+
+# Making a scatter plot of glucose v insulin 
+ggplot(diabetes_data, aes(x = Glucose, y = Insulin)) +
+  geom_point(aes(color = Outcome)) +
+  labs(title = "Glucose vs. Insulin")
+
+# Next I will make a scatter plot of skin thickness vs BMI 
+ggplot(diabetes_data, aes(x = SkinThickness, y = BMI)) +
+  geom_point(aes(color = Outcome)) +
+  labs(title = "Skin Thickness vs. BMI")
+
+
+```
+
+```{r}
+
+
+
+library(ggplot2)
+library(dplyr)
+
+#  We will now create histograms for further inspection of the data 
+diabetes_data %>%
+  select_if(is.numeric) %>%  
+  names() %>%
+  purrr::walk(~ {
+    p <- ggplot(diabetes_data, aes(x = .data[[.]])) +
+      geom_histogram(bins = 30, fill = 'blue', color = 'black') +
+      labs(title = paste('Histogram of', .), x = ., y = 'Frequency') +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    print(p)
+  })
+
+
+```
+
+## Part 1 Report :
+
+After Investigating the aforementioned diabetes data-set I discovered many important things about the data. The data at first appeared to have no missing values. But on further inspection the missing values were represented as 0 values for many of the numeric features. They were imputed promptly using the mean. There were no duplicate rows in the data-set. The data-set contained 9 variables. 7 of which were numerical and 2 of which were categorical (pregnancies can be treated as effectively ordinal categorical and Outcome is a binary categorical variable). The summary stats required me to do further research. After research of normal levels of many of the bio-markers\[1\]. The median for some of the features were normal but the glucose levels insulin levels and BMI were high suggesting obesity, high blood sugar and insulin resistance.
+
+On further examination the skewness and kurtosis measure the asymmetry and the tendency towards tailedness of the data. Skewness values were close to 0 suggesting symmetry for the distribution and kurtosis values also suggested a close to normal distribution for the features.
+
+Continuing our examination the correlations showed that some of input variables were moderately correlated such as Pregnancies and Age with a correlation of 0.54 or Glucose and insulin with a correlation of 0.42. We looked at some of these pairs in greater detail with visualizations.
+
+The box-plots demonstrated that some input variables were at higher levels for those with a positive outcome as opposed to a negative suggesting correlation between that feature and diabetes. All features including Insulin, Age, BMI and Glucose were higher in those with diabetes and for some features the difference was not as significant i.e Blood pressure. The correlation between the target feature Outcome and other features showed that Glucose and BMI were most correlated with the Outcome and Blood pressure was least correlated which confirmed what was seen in the box-plots.
+
+Continuing with our visual examination the pair plots showed the distributions for the features and while most of the plots seemed to be right skewed, Correlations were also seem visually and the feature pairs with higher correlation coefficients such as Glucose and Insulin were seen as stronger positive correlations although all correlations between features were moderate at best and there were no truly strongly correlated feature pairs seen in the visualization.
+
+Scatter plots drawn for more correlated feature pairs such as Skin Thickness and BMI also confirmed their moderately strong correlations.
+
+Histograms were shown to further show the distributions more clearly. Again most features were shown to be right skewed but glucose and Blood pressure seem to be more normally distributed than others.
+
+### References
+
+1.  Diabetes Ireland "A Numbers Game," Diabetes Ireland. \[Online\]. Available: <https://www.diabetes.ie/are-you-at-risk-free-diabetes-test/a-numbers-game/.> \[Accessed: 24/11/2023\].
+
+# Part 2: R package
+
+## Introduction
+
+For this part of the project I will be using the caret package. The caret package is a framework which provides a suite of tools to create predictive models. It offers functions for pre-processing, data splitting, model tuning and feature importance estimation among other things. Caret acts as a wrapper around other packages expanding its usefulness in machine learning and statistical modelling. A reference is provided.
+
+M. Kuhn, "caret: Classification and Regression Training," \[Online\]. Available: <https://CRAN.R-project.org/package=caret.> \[Accessed: \<24/11/2023\>\].
+
+```{r}
+
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Firstly I will install the packages I need  (caret acts as a wrapper so we can use some other packages can help show its use.)
+install.packages("caret")
+install.packages("randomForest")
+install.packages("gbm")
+
+
+library(caret)
+library(randomForest)
+library(gbm)
+
+
+# Next I will load my data 
+diabetes_data <- read.csv("C:/Users/krmch/OneDrive/Desktop/specs/diabetes (1).csv")
+
+
+# Next I will impute means for zero as earlier 
+diabetes_data <- diabetes_data %>%
+  mutate(across(all_of(columns_to_impute), 
+                ~ ifelse(. == 0, mean(.[. != 0], na.rm = TRUE), .)))
+
+
+diabetes_data$Outcome <- factor(diabetes_data$Outcome, levels = c(0, 1))
+
+# Next I will split data into training and test sets 
+set.seed(100)
+trainIndex <- createDataPartition(diabetes_data$Outcome, p = .8, list = FALSE)
+trainData <- diabetes_data[trainIndex, ]
+testData <- diabetes_data[-trainIndex, ]
+
+# next I will create a preprocess object 
+
+
+preProcValues <- preProcess(trainData, method = c("center", "scale"))
+
+
+# I will next apply preprocessing to training and testing data.
+trainDataPreProcessed <- predict(preProcValues, trainData)
+testDataPreProcessed <- predict(preProcValues, testData)
+
+# Next I will train a model 
+control <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+modelFit_rf <- train(Outcome ~ ., data = trainDataPreProcessed, method = "rf", trControl = control)
+
+# next I will use it to generate predictons 
+predictions_rf <- predict(modelFit_rf, testDataPreProcessed)
+predictions_rf <- factor(predictions_rf, levels = c(0, 1))
+
+# Next I will create a confusion matrix
+confMat_rf <- confusionMatrix(predictions_rf, testDataPreProcessed$Outcome)
+
+# Finally I will print 
+print(confMat_rf)
+
+
+```
+
+## Part 2 Report:
+
+The Caret package provides a unified interface that you can use to train classification and regression models. It has extensive functionality for data pre-processing , model tuning , feature selection and model evaluation. Several functions were tested for the purpose of this project. The createDataPartition from caret was used to split data to ensure that the model can be trained and tested on different parts of the data to prevent overfitting on training data. The preProcess function was used to center and scale the training data. Many algorithms require this for optimal performance. The train function was used to train a Random forest model. The performance was evaluated using the confusionMatrix function which generates metrics to evaluate the models predictive power. The accuracy was shown to be 74.51% and the sensitivity and specificity were 79% and 66% respectively.
+
+# 
+
+# Part 3:
+
+```{r}
+
+
+
+# Load the dataset
+library(readr)
+path <- "C:/Users/krmch/OneDrive/Desktop/specs/diabetes (1).csv"
+diabetes_data <- read_csv(path)
+
+# Now we will define the risk assessment function 
+diabetes_risk_assessment <- function(data) {
+
+  
+  if (!is.data.frame(data)) {
+      stop("Input needs to be a dataframe")
+  }
+
+  # Calculate risk score (based on the correlations with the Outcome )
+ risk_score <- with(data,
+                    
+                   Glucose * 0.492927 + 
+                   BMI *  0.311924 + 
+                   Age * 0.238356 + 
+                   Pregnancies *  0.221898 + 
+                   DiabetesPedigreeFunction * 0.173844 +
+                   Insulin * 0.214411 +
+                   SkinThickness *  0.215299 +
+                   BloodPressure *  0.166073)
+
+
+  # summary statistics 
+  stats <- sapply(data, summary)
+
+  # now we will create an s3 object 
+  result <- list(risk_scores = risk_score, stats = stats)
+  class(result) <- "diabetes_risk_assessment"
+
+  # result 
+  return(result)
+}
+
+# print method
+print.diabetes_risk_assessment <- function(x) {
+  cat("Diabetes Risk Assessment Stats:\n")
+  print(x$stats)
+  cat("\nSummary stats for the risk scores :\n")
+  print(summary(x$risk_scores))
+  cat("\nDistribution of risk score :\n")
+  cat("Min:", min(x$risk_scores), "Max:", max(x$risk_scores), "\n")
+  cat("Mean:", mean(x$risk_scores), "Median:", median(x$risk_scores), "\n")
+}
+
+
+
+
+# Summary method 
+summary.diabetes_risk_assessment <- function(x) {
+  cat("Summary Stats for Diabetes Risk Assessment:\n")
+  stats <- summary(x$risk_scores)
+  cat("\nDistribution of risk score :\n")
+  cat("Min:", min(x$risk_scores), "Max:", max(x$risk_scores), "\n")
+  cat("Mean:", mean(x$risk_scores), "Median:", median(x$risk_scores), "\n")
+  cat("Standard Deviation:", sd(x$risk_scores), "\n")
+  return(stats)
+}
+
+# Plot method 
+plot.diabetes_risk_assessment <- function(x) {
+  hist(x$risk_scores, main = "diabetes risk scores histogram", xlab = "risk Score", ylab = "frequency", col = "blue", border = "black", breaks = 30)
+  abline(v = mean(x$risk_scores), col = "red", lwd = 2, lty = 2)
+  abline(v = median(x$risk_scores), col = "darkgreen", lwd = 2, lty = 2)
+  legend("topright", legend = c("Mean", "Median"), col = c("red", "darkgreen"), lty = 2, lwd = 2)
+}
+
+# Using in an example 
+result <- diabetes_risk_assessment(diabetes_data)
+print(result)
+summary(result)
+plot(result)
+
+
+```
+
+# END FINAL ASSIGNMENT

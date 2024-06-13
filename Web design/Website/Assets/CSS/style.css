@@ -1,0 +1,388 @@
+html, body {
+  font-family: "Open Sans", sans-serif;
+  background-color: #272524;
+  height: 100%;
+  font-size: 16px;
+}
+
+#main {
+  position: relative;
+  background-color: white;
+  width: 80%;
+  margin: auto;
+  min-height: 600px;
+  
+}
+
+header {
+  background-image: url("../Images/Cover_Image.jpg");
+  background-color: #DDD;
+  height: 25%;
+  min-height: 150px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+#headerText {
+  margin-bottom: 110px;
+  text-align: center;
+  vertical-align: bottom;
+  font-size: 2.5rem;
+  padding-right: 75px;
+  padding-top: 15px;
+  color: white;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+nav li {
+  float: left;
+}
+
+nav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 15px 30px;
+  text-decoration: none;
+}
+
+nav li a:hover {
+  background-color: #111;
+}
+
+section {
+  min-height: 300px;
+  background-color: white;
+}
+
+footer {
+  text-align: center;
+  min-height: 20px;
+  background-color: #777;
+  color: white;
+  font-size: 0.8em;
+  padding-top: 8px;
+}
+
+.contentSection {
+  padding-top: 10px;
+}
+
+.contentSection h2 {
+  color: darkgreen;
+  margin-left: 30px;
+  font-size: 2rem;
+  margin-left: 4%;
+}
+
+.contentSection p {
+  color: dimgray;
+  margin-left: 4%;
+  font-size: 1.25rem;
+  font-family: "Times New Roman", Times, serif;
+  margin-right: 4%;
+}
+
+h5 {
+  color: grey;
+  font-style: italic;
+  margin-left: 4%;
+  font-size: 1.75rem;
+  font-family: "Times New Roman", Times, serif;
+  margin-right: 4%;
+  text-align: center;
+}
+
+#styleParagraph p {
+  margin-right: 20%;
+  font-size: 1.2rem;
+}
+
+#textImg {
+  float: right;
+  width: 18%;
+  padding: 10px;
+  padding-bottom: 12%;
+  padding-left: 2%;
+}
+
+.floating-box {
+  clear-right: right;
+  display: inline-block;
+  width:  20%;
+  margin: auto;
+  margin-bottom: 20px;
+  margin: 2%;
+  margin-top: 50px;
+  position: justify;
+}
+
+.floating-box img {
+  max-width: 100%;
+}
+
+.floating-box p {
+  margin-left: 27%
+}
+
+#FacilityPictures {
+  text-align: center;
+}
+
+#rotator {
+  width: 70%;
+  margin: auto;
+}
+
+#rotator img {
+  border-radius: 5%;	
+  max-width: 70%;
+}
+
+#content h3 {
+  margin-top: 50px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+#form h3 {
+  text-align: left;
+  margin-left: 5%;
+  font-size: 2.5rem;
+}
+
+#content hr {
+  width: 30%;
+}
+
+#prev { 
+  margin-bottom: 5%
+}
+
+#FacilityPictures, h4 {
+  font-size: 2rem;
+  margin-top: 5%;
+}
+
+ div label {
+  margin-left: 5%;
+  color: blue;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.generalInput {
+  width: 375px;
+  display: block; 
+  border: 1px grey solid;
+  height: 25px; 
+  margin-bottom: 20px;
+  margin-left: 5%;
+}
+
+.clickInput {
+  border: 1px grey solid;
+  margin-bottom: 7px;
+  margin-right: 10px;
+  margin-left: 5%;
+}
+
+.Gender {
+  margin-left: 5%;
+}
+
+#FormButton {
+  margin-bottom: 3%;
+  margin-left: 4%;
+}
+
+.errorMessage {
+  color: red; 
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.iframe {
+  width: 70%;
+  margin-top: 2%;
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+.youtube {
+  width: 45%;
+  margin-top: 2%;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+#Birthday img{
+  width: 70%;
+  margin-left: 15%;
+  margin-right: 15%;
+  height: 100%
+}
+
+#list{
+  margin: auto;
+  border-radius: 5px;
+  padding: 1%;
+}
+
+#list ol {
+  list-style-type: none;
+}
+
+#list ol li {
+  position: relative;
+  margin-bottom: 2%;
+}
+
+#list ul li {
+  margin-left: 25%;
+}
+
+#list span{
+  position: absolute;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+  color: #222;
+}
+
+#list span {
+  text-align: center-left;
+}
+
+#saturday span {
+  margin-left: 0.5%;
+}
+
+#sunday span {
+  margin-left: 0.75%;
+}
+
+.gmap_canvas {
+  margin: auto;
+  margin-left: 25%;
+  margin-bottom: 5%;
+  width: 80%;
+}
+
+table.imagetable {
+  font-family: verdana,arial,sans-serif;
+  font-size: 15px;
+  color:#333;
+  border-width: 1px;
+  border-color: #999;
+  border-collapse: collapse;
+  text-align: center;
+  margin: auto;
+}
+
+table.imagetable th {
+  background:#b5cfd2 url('../Images/cell-blue.jpg');
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #999;
+}
+
+table.imagetable td {
+  background:#dcddc0 url("../Images/cell-grey.jpg");
+  border-width: 1px;
+  padding: 8px; 
+  border-style: solid;
+  border-color: #999;
+}
+
+.wrapper {
+  text-align: center;
+}
+.quizButton {
+  postition: absolute;
+}
+ 
+#quiz h2 {
+  margin-left: 10%;
+  color: red;
+}
+
+#quiz h3 {
+  margin-right: 40%
+}
+
+#submission {
+  margin-left: 5%;
+}
+
+.timer p {
+  margin: auto;
+  padding: 2%;
+  text-align: center;
+  border: 3px black solid;
+  width: 25%;
+  font-size: 1.5rem;
+}
+
+
+	/* Wide Screens */
+    @media only screen and (max-width : 1200px) {
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #DDD;
+        height: 100%;
+        font-size: 20px;
+      }
+    }
+
+    /* Desktops */
+    @media only screen and (max-width : 992px) {
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #DDD;
+        height: 100%;
+        font-size: 16px;
+      }
+    }
+
+    /* Tablets */
+    @media only screen and (max-width : 768px) {
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #DDD;
+        height: 100%;
+        font-size: 12px;
+      }
+    }
+
+    /* Phones */ 
+    @media only screen and (max-width : 480px) {
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #DDD;
+        height: 100%;
+        font-size: 10px;
+      }
+    }
+
+    /* Custom */ 
+    @media only screen and (max-width : 320px) {
+      html, body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #DDD;
+        height: 100%;
+        font-size: 8px;
+      }
+    }
+
+
+	
+
+
